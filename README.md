@@ -16,11 +16,14 @@ make file_name="examples/example001/hello.b" mode="nodebug"
 The compiler will automatically call the respective assembly pipelines for you .
 
 For running the generated Assembly:
+
 If MIPS:
     You need Java installed 
+
 If X86_64:
     You just need gcc 
+
 If ARM64-MAC:
-    Create a bash file `assemble.sh` to assemble the program using your preferred assembler
+    Create a custom `assemble.sh` file to assemble
 
 
