@@ -1,5 +1,5 @@
 # B-compiler
-Compiler for the dead language B which produces MIPS or X86_64 Assembly
+Compiler for the dead language B which produces MIPS, X86_64 or ARM64 Assembly
 # Build Process
 For compiling the compiler just run make
 If you have already built the compiler once and want to run it, just do make run
@@ -20,7 +20,7 @@ If MIPS:
     You need Java installed 
 If X86_64:
     You just need gcc 
-
-
+If ARM64-MAC:
+    Create a bash file `assemble.sh` to assemble the program using your preferred assembler
 
 
