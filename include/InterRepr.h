@@ -183,10 +183,6 @@ public:
   bool is_main_func_present = false;
 
 private:
-  std::unordered_map<size_t, big_int> const_vars;
-  std::optional<big_int> get_const(const Arg &);
-  void set_const(const Var &, big_int);
-  void remove(const Var &);
 };
 
 // helper function

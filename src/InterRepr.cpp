@@ -460,11 +460,6 @@ Arg IREmittor::compile_expression(int precedence, Ops &ops) {
       rhs = compile_expression(0, ops);
       std::visit(overload{[&](const Var &var) {
                             ops.emplace_back(BinOp{var, var, rhs, type});
-                            auto rval = get_const(rhs);
-                            if (rval.has_value())
-                              const_vars[var.index] = rval.value();
-                            else
-                              remove(var);
                           },
                           [&](const Ref &ref) {
                             ops.emplace_back(Store{ref.index, rhs});
@@ -475,16 +470,9 @@ Arg IREmittor::compile_expression(int precedence, Ops &ops) {
                  lhs);
     } else {
       rhs = compile_expression(precedence + 1, ops);
-      auto lval = get_const(lhs);
-      auto rval = get_const(rhs);
-      if (lval.has_value() && rval.has_value()) {
-        auto result = eval_binop(lval.value(), rval.value(), type);
-        lhs = Literal{result};
-      } else {
-        Var temp{vars_count++, Storage::Auto};
-        ops.emplace_back(BinOp{temp, lhs, rhs, type});
-        lhs = temp;
-      }
+      Var temp{vars_count++, Storage::Auto};
+      ops.emplace_back(BinOp{temp, lhs, rhs, type});
+      lhs = temp;
     }
   }
   return lhs;
@@ -523,12 +511,6 @@ Arg IREmittor::compile_prim_expr(Ops &ops) {
       temp = Var{vars_count++, Storage::Auto};
       ops.emplace_back(BinOp{temp, NoArg{}, ret, Tokentype::assignment});
       ops.emplace_back(BinOp{*var, temp, Literal{1}, conv(type)});
-      auto old_val = get_const(*var);
-      if (old_val.has_value()) {
-        set_const(*var, old_val.value() + ((type == Tokentype::incr) ? 1 : -1)
-                  // +1 if incr, else -1
-        );
-      }
       ret = temp;
     } else if (Ref *ref = std::get_if<Ref>(&ret)) {
       size_t curr = ref->index;
@@ -582,14 +564,8 @@ Arg IREmittor::compile_primary_expression(Ops &ops) {
   case Tokentype::not_:
   case Tokentype::bit_not: {
     Arg arg = compile_primary_expression(ops);
-    auto opnd = get_const(arg);
-    if (opnd.has_value()) {
-      auto result = eval_unop(opnd.value(), token.type);
-      return Literal{result};
-    } else {
-      ops.emplace_back(UnOp{vars_count, arg, token.type});
-      return Var{vars_count++, Storage::Auto};
-    }
+    ops.emplace_back(UnOp{vars_count, arg, token.type});
+    return Var{vars_count++, Storage::Auto};
   }
   case Tokentype::bit_and: {
     Arg arg = compile_primary_expression(ops);
@@ -635,13 +611,6 @@ Arg IREmittor::compile_primary_expression(Ops &ops) {
     if (var.index == -1)
       errorf("Variable not declared {}", val.val);
     ops.emplace_back(BinOp{Var{var.index}, var, Literal{1}, conv(token.type)});
-    auto old_val = get_const(var);
-    if (old_val.has_value()) {
-      set_const(var,
-                old_val.value() + ((token.type == Tokentype::incr) ? 1 : -1)
-                // +1 if incr, else -1
-      );
-    }
     return var;
   }
   case Tokentype::function: {
@@ -671,8 +640,8 @@ Arg IREmittor::compile_primary_expression(Ops &ops) {
                "arguments but got only {} arguments",
                funcall_name, num_args - default_size, args_size);
     }
-    if (funcall_name == "printf" 
-     || funcall_name == "scanf") // variadic calls on stack
+    if (funcall_name == "printf" ||
+        funcall_name == "scanf") // variadic calls on stack
       ops.emplace_back(Funcall{funcall_name, args, args.size() - 1});
     else
       ops.emplace_back(Funcall{funcall_name, args, 0});
@@ -715,45 +684,6 @@ bool IREmittor::try_peek(const std::vector<Tokentype> &types, int offset) {
 }
 bool IREmittor::try_peek(const Tokentype &type, int offset) {
   return try_peek(std::vector<Tokentype>{type}, offset);
-}
-
-// helper function
-std::optional<big_int> IREmittor::get_const(const Arg &arg) {
-  return std::visit(overload{
-    /*
-                            [&](const Literal &lit) -> std::optional<big_int> {
-                               return lit.literal;
-                             },
-                             [&](const Var &var) -> std::optional<big_int> {
-                               auto it = const_vars.find(var.index);
-                               if (it != const_vars.end())
-                                 return it->second;
-                               return std::nullopt;
-                             },*/
-                             [&](const auto &) -> std::optional<big_int> {
-                               return std::nullopt;
-                             }},
-                    arg);
-}
-
-void IREmittor::set_const(const Var &var, big_int x) {
-  auto it = const_vars.find(var.index);
-  if (it != const_vars.end())
-    const_vars[var.index] = x;
-}
-
-void IREmittor::remove(const Var &var) {
-  auto it = const_vars.find(var.index);
-  if (it != const_vars.end())
-    const_vars.erase(var.index);
-}
-
-void IREmittor::show_table() {
-  std::cout << "Index\t\t"
-            << "Value\n";
-  for (auto it = const_vars.begin(); it != const_vars.end(); it++) {
-    std::cout << it->first << "\t\t" << (it->second) << "\n";
-  }
 }
 
 big_int eval_binop(big_int lhs, big_int rhs, Tokentype type) {
