@@ -21,4 +21,21 @@ void Optimizer::remove_const(const Var &arg) {
     const_var.erase(arg.index);
 }
 
-void Optimizer::optimize() {}
+void Optimizer::optimize() {
+  for (auto func : compiler->functions)
+    optimize_function(func);
+  /*
+  for (auto it = compiler->extrns.begin(); it != compiler->extrns.end();) {
+    if (!funcalls.count(func_names))
+      it = compiler->extrns.erase(it);
+    else
+      it++;
+  }
+  REMOVE UN-USED EXTERNS
+  */
+}
+
+void Optimizer::optimize_function(Func &func) {
+  for (Op operation : func.Ops) {
+  }
+}
