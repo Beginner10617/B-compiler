@@ -13,5 +13,5 @@ private:
   std::set<std::string> funcalls;
   std::optional<int> get_const(const Arg &arg);
   void remove_const(const Var &arg);
-  void optimize_function(Func &func);
+  void constant_folding(Func &func);
 };
