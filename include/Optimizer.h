@@ -9,7 +9,7 @@ public:
 
 private:
   Compiler *compiler;
-  std::map<int, int> const_vars;
+  std::unordered_map<int, int> const_vars;
   std::set<std::string> funcalls;
   std::optional<int> get_const(const Arg &arg);
   void remove_const(const Var &arg);

@@ -301,7 +301,6 @@ bool IREmittor::compile_scope(Ops &ops) {
   if (try_consume(Tokentype::open_curly)) {
     size_t curr_vars = vars_count;
     size_t vars_size = vars.size();
-    std::cout << "inside compile scope\n";
     while (!try_consume(Tokentype::close_curly))
       compile_func_body(ops);
     vars.resize(vars_size);

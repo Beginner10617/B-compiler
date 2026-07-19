@@ -13,3 +13,5 @@ grammar.md
 # Mac specific files
 .DS_Store
 *.sh
+# Custom script to automate testing
+*.py
