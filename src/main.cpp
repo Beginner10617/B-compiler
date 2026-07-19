@@ -1,5 +1,5 @@
 #include<Runner.h>
-
+#include <Optimizer.h>
 
 int main(int argc,char* argv[])
 {
@@ -15,6 +15,9 @@ int main(int argc,char* argv[])
 
     IREmittor iremittor(tokens);
     Compiler compiler = iremittor.EmitIR();
+
+    Optimizer optimizer(&compiler);
+    optimizer.optimize();
 
     std::string target_lang=argv[3];
     Runner runner(target_lang,parent_path);

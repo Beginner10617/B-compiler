@@ -1,5 +1,5 @@
 #include "Optimizer.h"
-
+// TODO : populate const_vars, using BinOp of type assignment
 Optimizer::Optimizer(Compiler *c) { compiler = c; }
 
 std::optional<int> Optimizer::get_const(const Arg &arg) {
