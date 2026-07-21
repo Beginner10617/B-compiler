@@ -4,6 +4,12 @@
 //
 Optimizer::Optimizer(Compiler *c) { compiler = c; }
 
+CFG::CFG(Function &func) {
+  blocks_ = {};
+  for (auto op : func.function_body) {
+  }
+}
+/*
 void Optimizer::print_debug_data() {
   std::cout << "Constant table:\n";
   for (auto const_pair : const_vars) {
@@ -35,7 +41,7 @@ void Optimizer::remove_const(const Var &arg) {
 void Optimizer::optimize() {
   for (auto func : compiler->functions)
     constant_folding(func);
-  /*
+
   for (auto it = compiler->extrns.begin(); it != compiler->extrns.end();) {
     if (!funcalls.count(func_names))
       it = compiler->extrns.erase(it);
@@ -43,7 +49,7 @@ void Optimizer::optimize() {
       it++;
   }
   REMOVE UN-USED EXTERNS
-  */
+
 }
 
 struct Optimizer::Const_Folding_Visitor {
@@ -147,3 +153,4 @@ void Optimizer::constant_folding(Func &func) {
   }
   func.function_body = new_ops;
 }
+*/
