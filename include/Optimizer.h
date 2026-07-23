@@ -1,5 +1,4 @@
 #include <InterRepr.h>
-#include <set>
 #include <string>
 #include <unordered_map>
 
@@ -11,7 +10,7 @@ struct BasicBlock {
 // Control flow graph
 class CFG {
 public:
-  explicit CFG(Function &func);
+  explicit CFG(Func &func);
   BasicBlock *entry() const;
   std::vector<BasicBlock> reverse_postorder() const;
 
@@ -27,5 +26,5 @@ public:
 
 private:
   Compiler *compiler;
-  std::map<std::string, CFG> func_control_flows;
+  std::unordered_map<std::string, CFG> func_control_flows;
 };

@@ -20,7 +20,6 @@ int main(int argc, char *argv[]) {
   Compiler compiler = iremittor.EmitIR();
 
   Optimizer optimizer(&compiler);
-  optimizer.optimize();
 
   std::string target_lang = argv[3];
   Runner runner(target_lang, parent_path);
@@ -28,7 +27,6 @@ int main(int argc, char *argv[]) {
   runner.run();
   if (debugging) {
     debug(compiler);
-    optimizer.print_debug_data();
   } else
     system(("rm -rf " + parent_path + "/trash/").c_str());
   return 0;

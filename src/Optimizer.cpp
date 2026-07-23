@@ -2,9 +2,13 @@
 // TODO : populate const_vars, using BinOp of type "assignment"
 // analyze ir to understand how assignment BinOp works
 //
-Optimizer::Optimizer(Compiler *c) { compiler = c; }
+Optimizer::Optimizer(Compiler *c) {
+  compiler = c;
+  for (auto func : compiler->functions)
+    func_control_flows.emplace(func.function_name, CFG(func));
+}
 
-CFG::CFG(Function &func) {
+CFG::CFG(Func &func) {
   blocks_ = {};
   size_t id = 0, st = 0, index = 0;
   // 1. Broadly divide BasicBlock(s), don't define edges yet
